@@ -73,9 +73,6 @@ if (isset($_POST["speichern"])) {
    ?> 
    </div> 
 
-
-
-
      <h1>Blog</h1><br>
      <form action="index.php" method="post">
         <label for="name"> Name:</label><input id="name" type="text" name="name"><br>
@@ -84,5 +81,4 @@ if (isset($_POST["speichern"])) {
         <input type="submit" id="submit" name="speichern"><br>
     </form>
  </body>
- 
  </html>
