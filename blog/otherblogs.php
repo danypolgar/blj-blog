@@ -128,10 +128,9 @@ fieldset {
     margin-bottom: 2em;
 }
 
-.post_images{
-    width: 100%;
-    height: 100%;
-    margin-bottom: 15px;
+.form-actions a {
+    text-decoration: none;
+    color: black;
 }
 
  </style>
@@ -154,31 +153,32 @@ $isPostValid = true;
 <a href="http://10.20.16.104/php/blogpost/blog/otherblogs.php">Andere Blogs</a>
 </div><br>
 
+<div class="wrapper">
+
+<h2 class="form-title">BLJ-Blogs</h2>
+<h4>Hier sind die anderen Blogs:</h4>
 <?php
-$stmt = $dbh->prepare('SELECT * FROM posts');
-    $stmt->execute();
+$user = 'guest';
+$pass = 'blj12345';
+$dbh = new PDO('mysql:host=10.20.16.102;dbname=blogdb', $user, $pass);
+
+$stmt = $dbh->prepare('SELECT * FROM andereblogs');
+$stmt->execute();
+
+foreach($stmt as $output){?>
+<div class="form-actions">
+    <a href="http://<?= htmlspecialchars($output['ip'], ENT_QUOTES, "UTF-8");
+    ?><?= htmlspecialchars($output['pfad'], ENT_QUOTES, "UTF-8");
+    ?>"><?= htmlspecialchars($output['name'], ENT_QUOTES, "UTF-8");
+    ?></a>
     
-    foreach($stmt as $output){?>
-        <div class="form-actions">
-            <h2><?= htmlspecialchars($output['created_by'], ENT_QUOTES, "UTF-8"); ?></h2>
-            <h4><?= htmlspecialchars($output['post_title'], ENT_QUOTES, "UTF-8"); ?></h4>
-            <p><?= htmlspecialchars($output['post_text'], ENT_QUOTES, "UTF-8"); ?></p>    
-            <p><?= htmlspecialchars($output['created_at'], ENT_QUOTES, "UTF-8"); ?></p>
-           <div class = "topnav"> <?php if( htmlspecialchars($output['post_image'], ENT_QUOTES, "UTF-8") !== ''){
-            ?><img class="post_images" src="<?= htmlspecialchars($output['post_image'], ENT_QUOTES, "UTF-8"); ?>" onError="this.src='ersatzbild.png';" alt="Bild nicht verfügbar" /><?php
-        }
-        ?>  </div>   
-            <hr>
-
-        </div>
-        <?php
-    }
-foreach($stmt->fetchAll() as $x) {
-    var_dump($x);
+</div>
+<?php
 }
+?>
+</div>
 
- ?>
 
- </body>
- 
- </html>
+
+</body>
+</html>

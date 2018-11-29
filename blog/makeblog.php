@@ -128,12 +128,6 @@ fieldset {
     margin-bottom: 2em;
 }
 
-.post_images{
-    width: 100%;
-    height: 100%;
-    margin-bottom: 15px;
-}
-
  </style>
  </head>
  <body class = "wrapper">
@@ -145,40 +139,59 @@ $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $isNameValid = true;
 $isTitleValid = true;
 $isPostValid = true;
-?>
- <h1 class="form-title">Dani Blog</h1>
-
-<div class="topnav" id="myTopnav">
-<a href="http://10.20.16.104/php/blogpost/blog/makeblog.php" class="active">Blog erstellen</a>
-<a href="http://10.20.16.104/php/blogpost/blog/index.php">Blog lesen</a>
-<a href="http://10.20.16.104/php/blogpost/blog/otherblogs.php">Andere Blogs</a>
-</div><br>
-
-<?php
-$stmt = $dbh->prepare('SELECT * FROM posts');
-    $stmt->execute();
     
-    foreach($stmt as $output){?>
-        <div class="form-actions">
-            <h2><?= htmlspecialchars($output['created_by'], ENT_QUOTES, "UTF-8"); ?></h2>
-            <h4><?= htmlspecialchars($output['post_title'], ENT_QUOTES, "UTF-8"); ?></h4>
-            <p><?= htmlspecialchars($output['post_text'], ENT_QUOTES, "UTF-8"); ?></p>    
-            <p><?= htmlspecialchars($output['created_at'], ENT_QUOTES, "UTF-8"); ?></p>
-           <div class = "topnav"> <?php if( htmlspecialchars($output['post_image'], ENT_QUOTES, "UTF-8") !== ''){
-            ?><img class="post_images" src="<?= htmlspecialchars($output['post_image'], ENT_QUOTES, "UTF-8"); ?>" onError="this.src='ersatzbild.png';" alt="Bild nicht verfügbar" /><?php
-        }
-        ?>  </div>   
-            <hr>
+if (isset($_POST["speichern"])) {
+    $name = $_POST['name'] ??'';
+    $title = $_POST['title'] ??'';
+    $post = $_POST['post'] ??'';
+    $image = trim($_POST['image'] ??'');
 
-        </div>
-        <?php
+
+    if(empty($name)){
+        ?> <p class=errorbox>Bitte geben Sie Ihr Name an.</p> <?php
+        $isNameValid = false;
     }
-foreach($stmt->fetchAll() as $x) {
-    var_dump($x);
+    if(empty($title)){
+        ?> <p class=errorbox>Bitte schreiben Sie ein Titel.</p> <?php
+        $isTitleValid = false;
+    }
+    if(empty($post)){
+       ?> <p class=errorbox>Bitte schreiben Sie eine Nachticht.</p> <?php
+       $isPostValid = false;
+    }
+    
+
+    
+    if($isNameValid===true && $isTitleValid===true && $isPostValid===true){
+        $stmt = $dbh->prepare("INSERT INTO posts (created_by, post_title, post_text, post_image) VALUES(:name, :title, :post, :post_image)");
+        $stmt->execute([':name' => $name, ':title' => $title, ':post' => $post, ':post_image' => $image]);
+    }
 }
+?>
 
- ?>
-
- </body>
  
- </html>
+  
+  
+  
+
+    <h1 class="form-title">Dani Blog</h1>
+
+    <div class="topnav" id="myTopnav">
+    <a href="http://10.20.16.104/php/blogpost/blog/makeblog.php" class="active">Blog erstellen</a>
+    <a href="http://10.20.16.104/php/blogpost/blog/index.php">Blog lesen</a>
+    <a href="http://10.20.16.104/php/blogpost/blog/otherblogs.php">Andere Blogs</a>
+    </div><br>
+
+     <h1>Blog</h1><br>
+     <form   action="index.php" method="post">
+        <label for="name"> Name:</label><input class="form-control" id="name" type="text" name="name"><br>
+        <label for="title"> Titel:</label><input class="form-control" id="title" type="text" name="title"><br>
+        <label for="post"> Text:</label><textarea class="form-control" id="post"  name="post" rows="10"></textarea><br>
+        <div><label for="image"> Bild:</label>
+        <input class="form-control" type="text" id="image" name="image"></div><br>
+        <input class="btn btn-primary" type="submit" id="submit" name="speichern">
+        <a href="#" class="btn">Abbrechen</a><br>
+        <br>
+    </form>
+    </body>
+    </html>
